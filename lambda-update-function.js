@@ -5,6 +5,7 @@ const args = process.argv.slice(2);
 const [path] = args;
 
 const generateConfig = path => {
+    path = path.replace(/\s/g, '\\ ');
     const split = path.split('/');
     const functionName = split[split.length - 1];
 
