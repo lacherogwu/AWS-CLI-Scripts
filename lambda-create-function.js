@@ -23,12 +23,24 @@ const config = {
     ...generateConfig(path),
 };
 
-const command = `aws lambda create-function --function-name ${config.functionName} --runtime ${config.runtime} --role ${config.role} --handler ${config.handler} --zip-file ${config.zipFile}`;
+const commands = [
+    'zip -r "${PWD##*/}".zip ./', // creates zip file
+    `aws lambda create-function --function-name ${config.functionName} --runtime ${config.runtime} --role ${config.role} --handler ${config.handler} --zip-file ${config.zipFile}`, // creates lambda function
+    'rm "${PWD##*/}".zip', // removes zip file
+];
 
-exec(command, (err, res) => {
-    if(err){
-        console.error(err);
-    } else {
-        console.log(res);
+(async () => {
+
+    for(const command of commands){
+        await new Promise(r => {
+            exec(command, (err, res) => {
+                if(err){
+                    console.error(err);
+                } else {
+                    console.log(res);
+                    r();
+                }
+            });
+        });
     }
-});
+})();
